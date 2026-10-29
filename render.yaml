@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: bookleaf-authorcare-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@bookleaf.test
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: DEMO_AUTHOR_PASSWORD
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: AI_ENABLED
+        value: "true"
+      - key: AI_TIMEOUT_MS
+        value: "15000"
+      - key: AI_MAX_RETRIES
+        value: "2"
