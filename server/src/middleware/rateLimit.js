@@ -8,6 +8,7 @@ export const globalLimiter = rateLimit({
   max: isDev ? 1000 : config.rateLimit.max,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 
@@ -16,6 +17,7 @@ export const loginLimiter = rateLimit({
   max: isDev ? 50 : config.rateLimit.loginMax,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
   skipSuccessfulRequests: true,
   message: { success: false, message: 'Too many login attempts, please try again later.' },
 });
