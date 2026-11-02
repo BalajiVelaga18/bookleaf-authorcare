@@ -4,39 +4,31 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import api from '../../api/axios.js';
-import { BookOpen, Loader2, Shield } from 'lucide-react';
+import { BookOpen, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  role: z.enum(['author', 'admin']),
-  adminKey: z.string().optional(),
-}).refine((data) => data.role !== 'admin' || data.adminKey?.trim(), {
-  message: 'Admin registration key is required for admin signup',
-  path: ['adminKey'],
 });
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState('author');
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: 'author' },
   });
 
   const onSubmit = async (data) => {
     setError('');
     setLoading(true);
     try {
-      const res = await api.post('/auth/register', data);
-      const user = res.data.data;
+      await api.post('/auth/register', { ...data, role: 'author' });
       // Update auth context by reloading the page so AuthProvider fetches /me
-      navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard', { replace: true });
+      navigate('/dashboard', { replace: true });
       window.location.reload();
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
@@ -57,7 +49,7 @@ export default function RegisterPage() {
             <BookOpen className="h-7 w-7 text-leaf-600" />
           </div>
           <h1 className="font-serif text-2xl font-semibold text-ink-900">Create an account</h1>
-          <p className="mt-2 text-sm text-ink-500">Register as an author or admin</p>
+          <p className="mt-2 text-sm text-ink-500">Register as an author</p>
         </div>
 
         {error && (
@@ -82,27 +74,8 @@ export default function RegisterPage() {
             <input type="password" {...register('password')} className="input" placeholder="••••••••" autoComplete="new-password" />
             {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
           </div>
-          <div>
-            <label className="label">Account type</label>
-            <select {...register('role')} onChange={(e) => setRole(e.target.value)} className="input">
-              <option value="author">Author</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          {role === 'admin' && (
-            <div>
-              <label className="label flex items-center gap-1">
-                <Shield className="h-3.5 w-3.5" /> Admin registration key
-              </label>
-              <input type="password" {...register('adminKey')} className="input" placeholder="Provided by your team" />
-              {errors.adminKey && <p className="mt-1 text-xs text-red-600">{errors.adminKey.message}</p>}
-              <p className="mt-1 text-xs text-ink-500">
-                Ask the person who deployed the app for the key, or set <code className="rounded bg-ink-100 px-1 py-0.5">ADMIN_REGISTRATION_KEY</code> in the server environment.
-              </p>
-            </div>
-          )}
           <button type="submit" disabled={loading} className="btn-primary w-full">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create account'}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create author account'}
           </button>
         </form>
 
