@@ -44,7 +44,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
-      <Route path="/" element={<ProtectedRoute><AuthorLayout /></ProtectedRoute>}>
+      <Route path="/" element={<ProtectedRoute role="author"><AuthorLayout /></ProtectedRoute>}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<AuthorDashboardPage />} />
         <Route path="books" element={<BooksPage />} />
